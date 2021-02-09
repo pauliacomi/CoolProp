@@ -40,7 +40,7 @@ jobs:
     - name: Build wheels
       env:
        CIBW_BEFORE_BUILD: pip install cython wheel
-      run: python -m cibuildwheel --package_dir "wrappers/Python" --output-dir wheelhouse
+      run: python -m cibuildwheel --output-dir wheelhouse "wrappers/Python"
 
     - name: Store wheels as artifacts
       uses: actions/upload-artifact@v2
@@ -80,7 +80,7 @@ jobs:
     - name: Build wheels
       env:
        CIBW_BEFORE_BUILD: pip install cython wheel
-      run: python -m cibuildwheel --package_dir "wrappers/Python" --output-dir wheelhouse
+      run: python -m cibuildwheel --output-dir wheelhouse "wrappers/Python"
 
     - name: Store wheels as artifacts
       uses: actions/upload-artifact@v2
@@ -125,7 +125,7 @@ jobs:
     - name: Build wheels
       env:
        CIBW_BEFORE_BUILD: pip install cython wheel
-      run: python -m cibuildwheel --package_dir "wrappers/Python" --output-dir wheelhouse
+      run: python -m cibuildwheel --output-dir wheelhouse "wrappers/Python"
 
     - name: Store wheels as artifacts
       uses: actions/upload-artifact@v2
