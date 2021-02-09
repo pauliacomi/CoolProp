@@ -35,7 +35,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install --upgrade pip
-        pip install twine cibuildwheel==1.9.0
+        pip install cibuildwheel==1.9.0
 
     - name: Build wheels
       env:
@@ -76,7 +76,7 @@ jobs:
       shell: bash
       run: |
         pip install --upgrade pip
-        pip install twine cibuildwheel==1.9.0
+        pip install cibuildwheel==1.9.0
 
     - name: Build wheels
       env:
@@ -122,7 +122,7 @@ jobs:
       shell: bash
       run: |
         pip install --upgrade pip
-        pip install twine cibuildwheel==1.9.0
+        pip install cibuildwheel==1.9.0
 
     - name: Build wheels
       env:
