@@ -27,15 +27,15 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: '3.x'
 
     - name: Install dependencies
       run: |
         pip install --upgrade pip
-        pip install cibuildwheel==1.9.0
+        pip install twine cibuildwheel==1.9.0
 
     - name: Build wheels
       env:
@@ -66,17 +66,16 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
-        architecture: ${{ matrix.architecture }}
+        python-version: '3.x'
 
     - name: Install dependencies
       shell: bash
       run: |
         pip install --upgrade pip
-        pip install cibuildwheel==1.9.0
+        pip install twine cibuildwheel==1.9.0
 
     - name: Build wheels
       env:
@@ -112,17 +111,16 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
-        architecture: ${{ matrix.architecture }}
+        python-version: '3.x'
 
     - name: Install dependencies
       shell: bash
       run: |
         pip install --upgrade pip
-        pip install cibuildwheel==1.9.0
+        pip install twine cibuildwheel==1.9.0
 
     - name: Build wheels
       env:
