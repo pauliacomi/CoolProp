@@ -38,6 +38,7 @@ jobs:
         pip install twine cibuildwheel
 
     - name: Build wheels
+      working-directory: "wrappers/Python"
       run: python -m cibuildwheel --output-dir wheelhouse
 
     - name: Store wheels as artifacts
@@ -72,13 +73,13 @@ jobs:
 
     - name: Install dependencies
       shell: bash
-      working-directory: "wrappers/Python"
       run: |
         pip install --upgrade pip
         pip install twine cibuildwheel
 
-    - name: Build the package
+    - name: Build wheels
       shell: bash
+      working-directory: "wrappers/Python"
       run: python -m cibuildwheel --output-dir wheelhouse
 
     - name: Store wheels as artifacts
@@ -101,7 +102,8 @@ jobs:
       CIBW_BUILD: "cp38-*"
     strategy:
       matrix:
-        os: [macos-10.15, macos-11]
+        os: [macos-latest]
+        # os: [macos-10.15, macos-11]
 
     steps:
     - name: Checkout from git
@@ -117,7 +119,6 @@ jobs:
 
     - name: Install dependencies
       shell: bash
-      working-directory: "wrappers/Python"
       run: |
         pip install --upgrade pip
         pip install twine cibuildwheel
