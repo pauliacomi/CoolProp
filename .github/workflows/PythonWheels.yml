@@ -1,7 +1,17 @@
 
 name: PythonWheels
 
-on: [push]
+on:
+  push:
+    # On each push (should be removed)
+    branches:
+      - master
+    # On a tag, i.e. new version
+    tags:
+      - v*
+
+  # Manual run
+  workflow_dispatch:
 
 jobs:
   build_linux:
@@ -40,13 +50,12 @@ jobs:
     - name: Install dependencies
       run: |
         pip install --upgrade pip
-        pip install twine
 
     - name: Build wheels
       run: |
 
         # Run docker
-        chmod +x ./Python/manylinux/01_build_wheels.sh
+        chmod +x ./wrappers/Python/manylinux/01_build_wheels.sh
         docker run -itd --name manylinux $DOCKER_IMG_NAME:$DOCKER_MACHINE_TAG bash
         docker cp . manylinux:/io
         docker exec manylinux /io/wrappers/Python/manylinux/01_build_wheels.sh $SETUP_PY_ARGS
@@ -58,16 +67,6 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         path: install_root
-
-    # Wheel upload should be done to pypi, eventually
-    # - name: Upload wheels to pypi
-      # env: |
-      #   TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }} # To be eventually set for pypi upload
-      #   TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }} # To be eventually set for pypi upload
-      # run: |
-      #   pip install twine
-      #   twine upload dist/*
-
 
 
   build_windows:
@@ -98,6 +97,8 @@ jobs:
       run: |
         pip install --upgrade pip
         pip install twine wheel cython
+        # win specific dependency
+        pip install auditwheel
 
     - name: Build wheels
       working-directory: "wrappers/Python"
@@ -106,16 +107,95 @@ jobs:
         # Build wheel
         python setup.py bdist_wheel --dist-dir ../../install_root/
 
+        # Include libraries
+        for whl in dist/*.whl; do
+            # auditwheel comes in base image
+            auditwheel repair $whl -w ../../install_root/Python
+        done
+
     - name: Store wheels as artifacts
       uses: actions/upload-artifact@v2
       with:
         path: install_root
 
-    # Wheel upload should be done to pypi, eventually
-    # - name: Upload wheels to pypi
-      # env: |
-      #   TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }} # To be eventually set for pypi upload
-      #   TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }} # To be eventually set for pypi upload
-      # run: |
-      #   pip install twine
-      #   twine upload dist/*
+
+  build_macos:
+
+    name: Build wheel for macos-cp${{ matrix.python-version }}-${{ matrix.bitness }}
+    runs-on: ${{ matrix.os }}
+    env:
+      SETUP_PY_ARGS: "cmake=default,${{ matrix.bitness }}"
+    strategy:
+      matrix:
+        os: [macos-latest]
+        python-version: [3.8] # [3.5, 3.6, 3.7, 3.8, 3.9]
+        bitness: [32, 64]
+
+    steps:
+
+    - name: Checkout from git
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install wheel cython
+        # macos specific dependency
+        pip install delocate
+
+    - name: Build wheels
+      working-directory: "wrappers/Python"
+      run: |
+
+        # Build wheel
+        python setup.py bdist_wheel --dist-dir ../../install_root/
+
+        # Include libraries
+        for whl in dist/*.whl; do
+            delocate-wheel -w ../../install_root/Python -v $whl
+        done
+
+
+    - name: Store wheels as artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        path: install_root
+
+
+  # Wheel upload should be done to pypi, eventually
+  # But only when all builds complete well
+  upload_wheels:
+    runs-on: ubuntu-latest
+    needs: [build_linux, build_windows, build_macos]
+
+    steps:
+      - name: Download wheel artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: install_root
+
+      - name: Display downloaded files
+        run: ls -R
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+
+      - name: Install twine
+        run: |
+          pip install --upgrade pip
+          pip install twine
+
+      - name: Upload wheels to pypi
+        env:
+          TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }} # To be eventually set for pypi upload
+          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }} # To be eventually set for pypi upload
+        run: |
+          pip install twine
+          twine upload dist/*
