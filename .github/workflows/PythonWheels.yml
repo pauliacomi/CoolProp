@@ -6,7 +6,7 @@ on: [push]
 jobs:
   build_linux:
 
-    name: Build wheel for cp${{ matrix.python-version }}-${{ matrix.bitness }}-${{ matrix.manylinux_image }}
+    name: Build wheel for linux-cp${{ matrix.python-version }}-${{ matrix.bitness }}-${{ matrix.manylinux_image }}
     runs-on: ${{ matrix.os }}
     env:
       DOCKER_MACHINE_TAG: "v2.1.0"
@@ -46,7 +46,7 @@ jobs:
       run: |
 
         # Run docker
-        chmod +x Python/manylinux/01_build_wheels.sh
+        chmod +x ./Python/manylinux/01_build_wheels.sh
         docker run -itd --name manylinux $DOCKER_IMG_NAME:$DOCKER_MACHINE_TAG bash
         docker cp . manylinux:/io
         docker exec manylinux /io/wrappers/Python/manylinux/01_build_wheels.sh $SETUP_PY_ARGS
@@ -72,7 +72,7 @@ jobs:
 
   build_windows:
 
-    name: Build wheel for cp${{ matrix.python-version }}-${{ matrix.bitness }}-${{ matrix.manylinux_image }}
+    name: Build wheel for win-cp${{ matrix.python-version }}-${{ matrix.bitness }}
     runs-on: ${{ matrix.os }}
     env:
       SETUP_PY_ARGS: "cmake=default,${{ matrix.bitness }}"
@@ -97,7 +97,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install --upgrade pip
-        pip install twine cython
+        pip install twine wheel cython
 
     - name: Build wheels
       working-directory: "wrappers/Python"
