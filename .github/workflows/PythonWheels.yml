@@ -43,16 +43,10 @@ jobs:
         pip install twine
 
     - name: Build wheels
-      working-directory: "wrappers/Python/manylinux"
       run: |
 
-        # Get the directory containing this script
-        # see http://stackoverflow.com/a/246128/1360263
-        CUR_DIR="$( pwd )"
-        # Go up three directories
-        pushd ${CUR_DIR}/../../..
-
         # Run docker
+        chmod +x Python/manylinux/01_build_wheels.sh
         docker run -itd --name manylinux $DOCKER_IMG_NAME:$DOCKER_MACHINE_TAG bash
         docker cp . manylinux:/io
         docker exec manylinux /io/wrappers/Python/manylinux/01_build_wheels.sh $SETUP_PY_ARGS
@@ -63,7 +57,59 @@ jobs:
     - name: Store wheels as artifacts
       uses: actions/upload-artifact@v2
       with:
-        path: ./install_root/*.whl
+        path: install_root
+
+    # Wheel upload should be done to pypi, eventually
+    # - name: Upload wheels to pypi
+      # env: |
+      #   TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }} # To be eventually set for pypi upload
+      #   TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }} # To be eventually set for pypi upload
+      # run: |
+      #   pip install twine
+      #   twine upload dist/*
+
+
+
+  build_windows:
+
+    name: Build wheel for cp${{ matrix.python-version }}-${{ matrix.bitness }}-${{ matrix.manylinux_image }}
+    runs-on: ${{ matrix.os }}
+    env:
+      SETUP_PY_ARGS: "cmake=default,${{ matrix.bitness }}"
+    strategy:
+      matrix:
+        os: [windows-latest]
+        python-version: [3.8] # [3.5, 3.6, 3.7, 3.8, 3.9]
+        bitness: [32, 64]
+
+    steps:
+
+    - name: Checkout from git
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install twine cython
+
+    - name: Build wheels
+      working-directory: "wrappers/Python"
+      run: |
+
+        # Build wheel
+        python setup.py bdist_wheel --dist-dir ../../install_root/
+
+    - name: Store wheels as artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        path: install_root
 
     # Wheel upload should be done to pypi, eventually
     # - name: Upload wheels to pypi
