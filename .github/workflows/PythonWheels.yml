@@ -6,136 +6,71 @@ on: [push]
 jobs:
   build_linux:
 
-    runs-on: ubuntu-latest
-    env:
-      CIBW_BUILD: "cp38-*"
-      CIBW_MANYLINUX_X86_64_IMAGE: manylinux1
-      CIBW_MANYLINUX_I686_IMAGE: manylinux1
-      # TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }} # To be eventually set for pypi upload
-      # TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }} # To be eventually set for pypi upload
-
-    steps:
-
-    - name: Set up QEMU
-      if: runner.os == 'Linux'
-      uses: docker/setup-qemu-action@v1
-      with:
-        platforms: arm64
-
-    - name: Checkout from git
-      uses: actions/checkout@v2
-      with:
-        submodules: recursive
-
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-
-    - name: Install dependencies
-      run: |
-        pip install --upgrade pip
-        pip install twine cibuildwheel==1.9.0
-
-    - name: Build wheels
-      env:
-       CIBW_BEFORE_BUILD: pip install cython wheel
-       CIBW_ENVIRONMENT: export PATH="/wrappers/Python:$PATH"
-      run: python -m cibuildwheel --output-dir wheelhouse
-
-    - name: Store wheels as artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        path: ./wheelhouse/*.whl
-
-    # Wheel upload should be done to pypi, eventually
-    # - name: Upload wheels to pypi
-      # run: |
-      #   pip install twine
-      #   twine upload dist/*
-
-
-  build_windows:
-
-    runs-on: windows-latest
-    env:
-      CIBW_BUILD: "cp38-*"
-
-    steps:
-    - name: Checkout from git
-      uses: actions/checkout@v2
-      with:
-        submodules: recursive
-
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-
-    - name: Install dependencies
-      shell: bash
-      run: |
-        pip install --upgrade pip
-        pip install twine cibuildwheel==1.9.0
-
-    - name: Build wheels
-      env:
-       CIBW_BEFORE_BUILD: pip install cython wheel
-      run: python -m cibuildwheel --output-dir wheelhouse "wrappers/Python"
-
-    - name: Store wheels as artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        path: ./wheelhouse/*.whl
-
-    # Wheel upload should be done to pypi, eventually
-    # - name: Upload wheels to pypi
-      # run: |
-      #   pip install twine
-      #   twine upload dist/*
-
-
-
-  build_macOS:
-
+    name: Build wheel for cp${{ matrix.python-version }}-${{ matrix.platform_id }}-${{ matrix.manylinux_image }}
     runs-on: ${{ matrix.os }}
     env:
-      CIBW_BUILD: "cp38-*"
+      SETUP_PY_ARGS: "cmake=default,${{ matrix.bitness }}"
     strategy:
       matrix:
-        os: [macos-latest]
-        # os: [macos-10.15, macos-11]
+        os: [windows-latest]
+        python-version: [3.8] # [3.5, 3.6, 3.7, 3.8, 3.9]
+        bitness: [32, 64]
+        manylinux_image: [manylinux1, manylinux2010]
+        include:
+          - os: ubuntu-latest
+            bitness: 64
+            env:
+              DOCKER_IMG_NAME: "coolprop/manylinux"
+          - os: ubuntu-latest
+            bitness: 32
+            env:
+              DOCKER_IMG_NAME: "coolprop/manylinux32"
 
     steps:
+
     - name: Checkout from git
       uses: actions/checkout@v2
       with:
         submodules: recursive
 
-    - name: Set up Python
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: '3.x'
+        python-version: ${{ matrix.python-version }}
 
     - name: Install dependencies
-      shell: bash
       run: |
         pip install --upgrade pip
-        pip install twine cibuildwheel==1.9.0
+        pip install twine
 
     - name: Build wheels
-      env:
-       CIBW_BEFORE_BUILD: pip install cython wheel
-      run: python -m cibuildwheel --output-dir wheelhouse "wrappers/Python"
+      working-directory: "wrappers/Python/manylinux"
+      run: |
+
+        # Get the directory containing this script
+        # see http://stackoverflow.com/a/246128/1360263
+        CUR_DIR="$( pwd )"
+        # Go up three directories
+        pushd ${CUR_DIR}/../../..
+
+        # Run docker
+        docker run -itd --name manylinux ${DOCKER_IMG_NAME}:${DOCKER_MACHINE_TAG} bash
+        docker cp . manylinux:/io
+        docker exec manylinux /io/wrappers/Python/manylinux/01_build_wheels.sh ${SETUP_PY_ARGS}
+        docker cp manylinux:/io/install_root install_root
+        docker stop manylinux
+        docker rm manylinux
 
     - name: Store wheels as artifacts
       uses: actions/upload-artifact@v2
       with:
-        path: ./wheelhouse/*.whl
+        path: ./install_root/*.whl
 
     # Wheel upload should be done to pypi, eventually
     # - name: Upload wheels to pypi
+      # env: |
+      #   TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }} # To be eventually set for pypi upload
+      #   TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }} # To be eventually set for pypi upload
       # run: |
       #   pip install twine
       #   twine upload dist/*
-
