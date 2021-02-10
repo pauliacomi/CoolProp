@@ -6,7 +6,7 @@ on: [push]
 jobs:
   build_linux:
 
-    name: Build wheel for cp${{ matrix.python-version }}-${{ matrix.platform_id }}-${{ matrix.manylinux_image }}
+    name: Build wheel for cp${{ matrix.python-version }}-${{ matrix.platform_id }}
     runs-on: ${{ matrix.os }}
     env:
       SETUP_PY_ARGS: "cmake=default,${{ matrix.bitness }}"
@@ -15,7 +15,6 @@ jobs:
         os: [windows-latest]
         python-version: [3.8] # [3.5, 3.6, 3.7, 3.8, 3.9]
         bitness: [32, 64]
-        manylinux_image: [manylinux1, manylinux2010]
         include:
           - os: ubuntu-latest
             bitness: 64
@@ -54,9 +53,9 @@ jobs:
         pushd ${CUR_DIR}/../../..
 
         # Run docker
-        docker run -itd --name manylinux ${DOCKER_IMG_NAME}:${DOCKER_MACHINE_TAG} bash
+        docker run -itd --name manylinux ${{ DOCKER_IMG_NAME }}:${{ DOCKER_MACHINE_TAG }} bash
         docker cp . manylinux:/io
-        docker exec manylinux /io/wrappers/Python/manylinux/01_build_wheels.sh ${SETUP_PY_ARGS}
+        docker exec manylinux /io/wrappers/Python/manylinux/01_build_wheels.sh ${{ SETUP_PY_ARGS }}
         docker cp manylinux:/io/install_root install_root
         docker stop manylinux
         docker rm manylinux
