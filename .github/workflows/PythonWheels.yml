@@ -6,24 +6,24 @@ on: [push]
 jobs:
   build_linux:
 
-    name: Build wheel for cp${{ matrix.python-version }}-${{ matrix.platform_id }}
+    name: Build wheel for cp${{ matrix.python-version }}-${{ matrix.platform_id }}-${{ matrix.manylinux_image }}
     runs-on: ${{ matrix.os }}
     env:
       SETUP_PY_ARGS: "cmake=default,${{ matrix.bitness }}"
+      DOCKER_IMG_NAME: "${{ matrix.manylinux_image }}"
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [ubuntu-latest]
         python-version: [3.8] # [3.5, 3.6, 3.7, 3.8, 3.9]
         bitness: [32, 64]
+        manylinux_image: [coolprop/manylinux, coolprop/manylinux32]
         include:
           - os: ubuntu-latest
             bitness: 64
-            env:
-              DOCKER_IMG_NAME: "coolprop/manylinux"
+            manylinux_image: coolprop/manylinux
           - os: ubuntu-latest
             bitness: 32
-            env:
-              DOCKER_IMG_NAME: "coolprop/manylinux32"
+            manylinux_image: coolprop/manylinux32
 
     steps:
 
