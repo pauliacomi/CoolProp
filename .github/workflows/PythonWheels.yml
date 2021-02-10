@@ -6,7 +6,7 @@ on: [push]
 jobs:
   build_linux:
 
-    name: Build wheel for cp${{ matrix.python-version }}-${{ matrix.platform_id }}-${{ matrix.manylinux_image }}
+    name: Build wheel for cp${{ matrix.python-version }}-${{ matrix.bitness }}-${{ matrix.manylinux_image }}
     runs-on: ${{ matrix.os }}
     env:
       DOCKER_MACHINE_TAG: "v2.1.0"
@@ -17,7 +17,6 @@ jobs:
         os: [ubuntu-latest]
         python-version: [3.8] # [3.5, 3.6, 3.7, 3.8, 3.9]
         bitness: [32, 64]
-        manylinux_image: [coolprop/manylinux, coolprop/manylinux32]
         include:
           - os: ubuntu-latest
             bitness: 64
