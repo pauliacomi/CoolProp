@@ -2,13 +2,13 @@
 name: PythonWheels
 
 on:
-  push:
-    # On each push (should be removed)
-    branches:
-      - master
-    # On a tag, i.e. new version
-    tags:
-      - v*
+  # push:
+  #   # On each push (should be removed)
+  #   branches:
+  #     - master
+  #   # On a tag, i.e. new version
+  #   tags:
+  #     - v*
 
   # Manual run
   workflow_dispatch:
