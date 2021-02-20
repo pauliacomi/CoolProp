@@ -49,7 +49,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install --upgrade pip
+        python -m pip install --upgrade pip
 
     - name: Build wheels
       run: |
@@ -95,10 +95,10 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install --upgrade pip
-        pip install twine wheel cython
+        python -m pip install --upgrade pip
+        python -m pip install twine wheel cython
         # win specific dependency
-        pip install auditwheel
+        python -m pip install auditwheel
 
     - name: Build wheels
       shell: bash
@@ -146,10 +146,10 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install --upgrade pip
-        pip install wheel cython
+        python -m pip install --upgrade pip
+        python -m pip install wheel cython
         # macos specific dependency
-        pip install delocate
+        python -m pip install delocate
 
     - name: Build wheels
       working-directory: "wrappers/Python"
