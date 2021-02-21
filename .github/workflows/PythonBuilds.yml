@@ -32,7 +32,7 @@ jobs:
         if [ "$RUNNER_OS" == "Windows" ]; then
             python -m pip install pywin32
         fi
-        python -m pip install cython requests jinja2 pyyaml pycrypto
+        python -m pip install cython requests jinja2 pyyaml
 
     - name: Build the package
       shell: bash
