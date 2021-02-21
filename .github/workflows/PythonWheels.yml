@@ -75,6 +75,7 @@ jobs:
     env:
       SETUP_PY_ARGS: "cmake=default,${{ matrix.bitness }}"
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-latest]
         python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9]
@@ -99,6 +100,15 @@ jobs:
         python -m pip install pywin32 requests jinja2 pyyaml
         # win specific dependency
         python -m pip install auditwheel
+
+    - name: Installing VCS versions
+      if: python-version == 2.7
+      run: |
+        Install-Module -Name VcRedist -Force
+        New-Item -Path C:\Temp\VcRedist -ItemType Directory
+        $VcList = Get-VcList -Release "2008"
+        Save-VcRedist -VcList $VcList -Path C:\Temp\VcRedist
+        Install-VcRedist -Path C:\Temp\VcRedist -VcList $VcList -Silent
 
     - name: Build wheels
       shell: bash
