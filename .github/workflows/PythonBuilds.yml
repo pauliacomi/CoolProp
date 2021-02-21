@@ -31,6 +31,7 @@ jobs:
         python -m pip install flake8 pytest
         if [ "$RUNNER_OS" == "Windows" ]; then
             python -m pip install pywin32
+        fi
         python -m pip install cython requests jinja2 pyyaml pycrypto
 
     - name: Build the package
