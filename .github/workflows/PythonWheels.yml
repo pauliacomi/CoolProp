@@ -159,6 +159,7 @@ jobs:
       working-directory: "wrappers/Python"
       run: |
 
+        unset MACOSX_DEPLOYMENT_TARGET
         export MACOSX_DEPLOYMENT_TARGET=10.9
 
         # Build wheel
