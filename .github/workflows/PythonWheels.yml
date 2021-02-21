@@ -2,7 +2,7 @@
 name: PythonWheels
 
 on:
-  # push:
+  push:
   #   # On each push (should be removed)
   #   branches:
   #     - master
@@ -78,7 +78,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest]
-        python-version: [3.9] # [3.5, 3.6, 3.7, 3.8, 3.9]
+        python-version: [3.8] # [3.5, 3.6, 3.7, 3.8, 3.9]
         bitness: [32, 64]
 
     steps:
@@ -97,6 +97,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install twine wheel cython
+        python -m pip install pywin32 requests jinja2 pyyaml
         # win specific dependency
         python -m pip install auditwheel
 
@@ -108,11 +109,7 @@ jobs:
         # Build wheel
         python setup.py bdist_wheel --dist-dir ../../install_root/
 
-        # Include libraries
-        for whl in dist/*.whl; do
-            # auditwheel comes in base image
-            auditwheel repair $whl -w ../../install_root/Python
-        done
+        # Include libraries?
 
     - name: Store wheels as artifacts
       uses: actions/upload-artifact@v2
