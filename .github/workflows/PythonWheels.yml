@@ -63,6 +63,13 @@ jobs:
         docker stop manylinux
         docker rm manylinux
 
+    - name: Check build
+      shell: bash
+      run: |
+        pip install -vvv --force-reinstall --ignore-installed --upgrade --no-index `ls install_root/CoolProp*.whl`
+        python -c "import CoolProp; print(CoolProp.__gitrevision__)"
+        python -c "import CoolProp; print(CoolProp.__file__)"
+
     - name: Store wheels as artifacts
       uses: actions/upload-artifact@v2
       with:
@@ -111,6 +118,13 @@ jobs:
 
         # Include libraries?
 
+    - name: Check build
+      shell: bash
+      run: |
+        pip install -vvv --force-reinstall --ignore-installed --upgrade --no-index `ls install_root/CoolProp*.whl`
+        python -c "import CoolProp; print(CoolProp.__gitrevision__)"
+        python -c "import CoolProp; print(CoolProp.__file__)"
+
     - name: Store wheels as artifacts
       uses: actions/upload-artifact@v2
       with:
@@ -123,6 +137,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       SETUP_PY_ARGS: "cmake=default,${{ matrix.bitness }}"
+      MACOSX_DEPLOYMENT_TARGET: 10.9
     strategy:
       matrix:
         os: [macos-latest]
@@ -156,10 +171,16 @@ jobs:
         python setup.py bdist_wheel --dist-dir ../../install_root/
 
         # Include libraries
-        for whl in dist/*.whl; do
-            delocate-wheel -w ../../install_root/Python -v $whl
+        for whl in ../../install_root/*.whl; do
+            delocate-wheel -w ../../install_root -v $whl
         done
 
+    - name: Check build
+      shell: bash
+      run: |
+        pip install -vvv --force-reinstall --ignore-installed --upgrade --no-index `ls install_root/CoolProp*.whl`
+        python -c "import CoolProp; print(CoolProp.__gitrevision__)"
+        python -c "import CoolProp; print(CoolProp.__file__)"
 
     - name: Store wheels as artifacts
       uses: actions/upload-artifact@v2
