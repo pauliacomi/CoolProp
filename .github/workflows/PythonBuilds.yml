@@ -1,17 +1,20 @@
 name: PythonBuilds
 
 on:
-  [workflow_dispatch]
+  [push, workflow_dispatch]
 
 jobs:
   build:
 
+    name: Install for ${{ matrix.os }}-cp${{ matrix.python-version }}-${{ matrix.bitness }}-Cy${{ matrix.cython }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [ubuntu-latest] #, windows-latest, macos-latest]
         python-version: [2.7, 3.6, 3.7, 3.8, 3.9]
+        # bitness: [32, 64]
+        cython: [true, false]
 
     steps:
     - name: Checkout from git
@@ -40,6 +43,9 @@ jobs:
       run: |
         if [ "$RUNNER_OS" == "macOS" ]; then
             export MACOSX_DEPLOYMENT_TARGET=10.9
+        fi
+        if [ ${{ matrix.cython }} == false ]; then
+            touch .build_without_cython
         fi
         python generate_meta_info.py
         python setup.py install
