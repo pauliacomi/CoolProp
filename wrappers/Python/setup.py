@@ -2,7 +2,7 @@ from __future__ import print_function
 import platform
 import subprocess, shutil, os, sys, glob, tempfile
 from distutils.version import LooseVersion
-from distutils.sysconfig import get_config_var
+from distutils.sysconfig import get_config_var, get_config_vars
 from setuptools.command.build_ext import build_ext
 
 def copy_files():
@@ -56,6 +56,7 @@ if __name__ == '__main__':
     # libstdc++ which forces is to manipulate the minimum OSX target
     # version when compiling the Cython extensions.
     if sys.platform == 'darwin':
+        print(get_config_vars())
         osx_target = LooseVersion(get_config_var('MACOSX_DEPLOYMENT_TARGET'))
         osx_compiler = LooseVersion('0.0')
         osx_version = LooseVersion('0.0')
