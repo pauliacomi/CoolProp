@@ -81,13 +81,13 @@ if __name__ == '__main__':
             print("OSX build detected, targetting {0} using clang/gcc v{1}.".format(osx_target, osx_compiler))
 
         # allow to override things manually
-        if 'MACOSX_DEPLOYMENT_TARGET' not in os.environ:
-            if osx_version >= "10.14":
-                os.environ['MACOSX_DEPLOYMENT_TARGET'] = "10.9"
-                print("Assuming that we cannot build for {0} on {1}, resetting target to {2}".format(osx_target, osx_version, os.environ['MACOSX_DEPLOYMENT_TARGET']))
-            if osx_compiler >= "10":
-                os.environ['MACOSX_DEPLOYMENT_TARGET'] = "10.9"
-                print("Assuming that we cannot build for {0} using clang/gcc {1}, resetting target to {2}".format(osx_target, osx_compiler, os.environ['MACOSX_DEPLOYMENT_TARGET']))
+        # if 'MACOSX_DEPLOYMENT_TARGET' not in os.environ:
+        #     if osx_version >= "10.14":
+        #         os.environ['MACOSX_DEPLOYMENT_TARGET'] = "10.9"
+        #         print("Assuming that we cannot build for {0} on {1}, resetting target to {2}".format(osx_target, osx_version, os.environ['MACOSX_DEPLOYMENT_TARGET']))
+        #     if osx_compiler >= "10":
+        #         os.environ['MACOSX_DEPLOYMENT_TARGET'] = "10.9"
+        #         print("Assuming that we cannot build for {0} using clang/gcc {1}, resetting target to {2}".format(osx_target, osx_compiler, os.environ['MACOSX_DEPLOYMENT_TARGET']))
 
     # ******************************
     #       CMAKE OPTIONS
