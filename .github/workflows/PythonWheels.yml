@@ -61,14 +61,6 @@ jobs:
         docker exec manylinux /io/wrappers/Python/manylinux/01_build_wheels.sh $SETUP_PY_ARGS
         docker cp manylinux:/io/install_root install_root
         docker stop manylinux
-        docker rm manylinux
-
-    - name: Check build
-      shell: bash
-      run: |
-        pip install -vvv --force-reinstall --ignore-installed --upgrade --no-index `ls install_root/Python/CoolProp*.whl`
-        python -c "import CoolProp; print(CoolProp.__gitrevision__)"
-        python -c "import CoolProp; print(CoolProp.__file__)"
 
     - name: Store wheels as artifacts
       uses: actions/upload-artifact@v2
@@ -167,6 +159,8 @@ jobs:
       working-directory: "wrappers/Python"
       run: |
 
+        export MACOSX_DEPLOYMENT_TARGET=10.9
+
         # Build wheel
         python setup.py bdist_wheel --dist-dir ../../install_root/
 
@@ -185,7 +179,7 @@ jobs:
     - name: Store wheels as artifacts
       uses: actions/upload-artifact@v2
       with:
-        path: install_root
+        path: install_root/Python
 
 
   # Wheel upload should be done to pypi, eventually
