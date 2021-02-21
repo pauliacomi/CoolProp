@@ -102,7 +102,7 @@ jobs:
         python -m pip install auditwheel
 
     - name: Installing VCS versions
-      if: python-version == 2.7
+      if: matrix.python-version == 2.7
       run: |
         Install-Module -Name VcRedist -Force
         New-Item -Path C:\Temp\VcRedist -ItemType Directory
