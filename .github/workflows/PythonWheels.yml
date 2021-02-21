@@ -66,7 +66,7 @@ jobs:
     - name: Check build
       shell: bash
       run: |
-        pip install -vvv --force-reinstall --ignore-installed --upgrade --no-index `ls install_root/CoolProp*.whl`
+        pip install -vvv --force-reinstall --ignore-installed --upgrade --no-index `ls install_root/Python/CoolProp*.whl`
         python -c "import CoolProp; print(CoolProp.__gitrevision__)"
         python -c "import CoolProp; print(CoolProp.__file__)"
 
@@ -172,13 +172,13 @@ jobs:
 
         # Include libraries
         for whl in ../../install_root/*.whl; do
-            delocate-wheel -w ../../install_root -v $whl
+            delocate-wheel -w ../../install_root/Python -v $whl
         done
 
     - name: Check build
       shell: bash
       run: |
-        pip install -vvv --force-reinstall --ignore-installed --upgrade --no-index `ls install_root/CoolProp*.whl`
+        pip install -vvv --force-reinstall --ignore-installed --upgrade --no-index `ls install_root/Python/CoolProp*.whl`
         python -c "import CoolProp; print(CoolProp.__gitrevision__)"
         python -c "import CoolProp; print(CoolProp.__file__)"
 
