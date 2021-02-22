@@ -45,7 +45,7 @@ jobs:
             export MACOSX_DEPLOYMENT_TARGET=10.9
         fi
         if [ ${{ matrix.cython }} == false ]; then
-            touch .build_without_cython
+            python pypi/prepare_build.py
         fi
         python generate_meta_info.py
         python setup.py install
