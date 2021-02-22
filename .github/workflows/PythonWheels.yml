@@ -17,22 +17,19 @@ jobs:
   build_linux:
 
     name: Build wheel for linux-cp${{ matrix.python-version }}-${{ matrix.bitness }}-${{ matrix.manylinux_image }}
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     env:
       DOCKER_MACHINE_TAG: "v2.1.0"
       SETUP_PY_ARGS: "cmake=default,${{ matrix.bitness }}"
       DOCKER_IMG_NAME: "${{ matrix.manylinux_image }}"
     strategy:
       matrix:
-        os: [ubuntu-latest]
         python-version: [3.8]
         bitness: [32, 64]
         include:
-          - os: ubuntu-latest
-            bitness: 64
+          - bitness: 64
             manylinux_image: coolprop/manylinux
-          - os: ubuntu-latest
-            bitness: 32
+          - bitness: 32
             manylinux_image: coolprop/manylinux32
 
     steps:
@@ -71,19 +68,18 @@ jobs:
   build_windows:
 
     name: Build wheel for win-cp${{ matrix.python-version }}-${{ matrix.bitness }}
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
     env:
-      SETUP_PY_ARGS: "cmake=${{ matrix.vcv }},${{ matrix.bitness }}"
+      SETUP_PY_ARGS: "cmake=${{ matrix.msvc }},${{ matrix.bitness }}"
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest]
         python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9]
         bitness: [32, 64]
-        vcv: ["vc14"]
+        msvc: ["vc14"]
         include:
           - python-version: 2.7
-            vcv: "vc9"
+            msvc: "vc9"
 
     steps:
 
@@ -135,13 +131,12 @@ jobs:
   build_macos:
 
     name: Build wheel for macos-cp${{ matrix.python-version }}-${{ matrix.bitness }}
-    runs-on: ${{ matrix.os }}
+    runs-on: macos-latest
     env:
       SETUP_PY_ARGS: "cmake=default,${{ matrix.bitness }}"
       MACOSX_DEPLOYMENT_TARGET: 10.9
     strategy:
       matrix:
-        os: [macos-latest]
         python-version: [3.8] # [3.5, 3.6, 3.7, 3.8, 3.9]
         bitness: [32, 64]
 
