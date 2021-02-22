@@ -48,8 +48,8 @@ jobs:
         fi
         if [ ${{ matrix.cython }} == false ]; then
             cd pypi
-            python prepare_build.py SETUP_PY_ARGS
+            python prepare_build.py $SETUP_PY_ARGS
         else
             python generate_meta_info.py
-            python setup.py install SETUP_PY_ARGS
+            python setup.py install $SETUP_PY_ARGS
         fi
