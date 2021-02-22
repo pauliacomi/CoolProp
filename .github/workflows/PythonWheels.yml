@@ -73,13 +73,19 @@ jobs:
     name: Build wheel for win-cp${{ matrix.python-version }}-${{ matrix.bitness }}
     runs-on: ${{ matrix.os }}
     env:
-      SETUP_PY_ARGS: "cmake=default,${{ matrix.bitness }}"
+      SETUP_PY_ARGS: "cmake=${{ matrix.vcv }},${{ matrix.bitness }}"
     strategy:
       fail-fast: false
       matrix:
         os: [windows-latest]
         python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9]
         bitness: [32, 64]
+        vcv: ["vc9", "vc14"]
+        include:
+          - python-version: 2.7
+            vcv: "vc9"
+          - python-version: 3.x
+            vcv: "vc14"
 
     steps:
 
