@@ -80,6 +80,10 @@ jobs:
         include:
           - python-version: 2.7
             msvc: "vc9"
+            bitness: 32
+          - python-version: 2.7
+            msvc: "vc9"
+            bitness: 64
 
     steps:
 
