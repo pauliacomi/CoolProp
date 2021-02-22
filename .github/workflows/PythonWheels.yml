@@ -80,11 +80,10 @@ jobs:
         os: [windows-latest]
         python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9]
         bitness: [32, 64]
+        vcv: ["vc14"]
         include:
           - python-version: 2.7
             vcv: "vc9"
-          - python-version: 3
-            vcv: "vc14"
 
     steps:
 
