@@ -6,7 +6,7 @@ on:
 jobs:
   build:
 
-    name: Install for ${{ matrix.os }}-cp${{ matrix.python-version }}-${{ matrix.bitness }}-cy${{ matrix.cython }}
+    name: Install for ${{ matrix.os }}-cp${{ matrix.python-version }}-cy${{ matrix.cython }}
     runs-on: ${{ matrix.os }}
     env:
       SETUP_PY_ARGS: "cmake=default,${{ matrix.bitness }}"
@@ -15,7 +15,6 @@ jobs:
       matrix:
         os: [ubuntu-latest] #, windows-latest, macos-latest]
         python-version: [2.7, 3.6, 3.7, 3.8, 3.9]
-        bitness: [32, 64]
         cython: [true, false]
 
     steps:
@@ -48,8 +47,8 @@ jobs:
         fi
         if [ ${{ matrix.cython }} == false ]; then
             cd pypi
-            python prepare_build.py $SETUP_PY_ARGS
+            python prepare_build.py
         else
             python generate_meta_info.py
-            python setup.py install $SETUP_PY_ARGS
+            python setup.py install
         fi

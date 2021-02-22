@@ -2,7 +2,7 @@
 name: PythonWheels
 
 on:
-  # push:
+  push:
   #   # On each push (should be removed)
   #   branches:
   #     - master
