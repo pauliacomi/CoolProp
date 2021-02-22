@@ -38,7 +38,7 @@ jobs:
         fi
         python -m pip install cython requests jinja2 pyyaml
 
-    - name: Installing VCS versions
+    - name: Installing specific VCS version
       if: matrix.os == windows-latest && matrix.python-version == 2.7
       run: choco install vcpython27
 
