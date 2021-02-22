@@ -38,6 +38,10 @@ jobs:
         fi
         python -m pip install cython requests jinja2 pyyaml
 
+    - name: Installing VCS versions
+      if: matrix.os == windows-latest && matrix.python-version == 2.7
+      run: choco install vcpython27
+
     - name: Build the package
       shell: bash
       working-directory: "wrappers/Python"
