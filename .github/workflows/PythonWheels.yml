@@ -111,7 +111,7 @@ jobs:
       run: |
 
         # Build wheel
-        python setup.py bdist_wheel --dist-dir ../../install_root/
+        python setup.py bdist_wheel --dist-dir ../../install_root/ SETUP_PY_ARGS
 
         # Include libraries?
 
@@ -168,7 +168,7 @@ jobs:
         export MACOSX_DEPLOYMENT_TARGET=10.9
 
         # Build wheel
-        python setup.py bdist_wheel --dist-dir ../../install_root/
+        python setup.py bdist_wheel --dist-dir ../../install_root/ SETUP_PY_ARGS
 
         # Include libraries
         for whl in ../../install_root/*.whl; do
