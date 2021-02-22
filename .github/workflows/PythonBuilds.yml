@@ -47,7 +47,8 @@ jobs:
         if [ ${{ matrix.cython }} == false ]; then
             cd pypi
             python prepare_build.py
+            python setup.py install
         else
             python generate_meta_info.py
+            python setup.py install
         fi
-        python setup.py install
